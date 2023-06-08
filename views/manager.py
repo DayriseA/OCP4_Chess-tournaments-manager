@@ -8,6 +8,8 @@ class ManagerView:
         """Displays the menu prompt.[WIP]"""
         print("Welcome, what do you want to do?")
         print("\n1. Add a player to our local base")
+        print("\n2. Display all registered players")
+        print("\n\nType 'q' to quit the program")
         choice = input("\nPress the number of your choice: ")
         return choice
 
