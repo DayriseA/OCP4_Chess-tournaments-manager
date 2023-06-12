@@ -21,3 +21,12 @@ class ManagerView:
         birthdate = input("Birthdate (DD-MM-YYYY): ")
         chess_national_id = input("Chess national ID: ")
         return (firstname, lastname, birthdate, chess_national_id)
+
+    def end_match_prompt(self, player1_name, player2_name):
+        """Prompt for the march result."""
+        choice = input(
+            "Select if:\n1. {} won\n2. {} won\n3. Draw\n".format(
+                player1_name, player2_name
+            )
+        )
+        return choice

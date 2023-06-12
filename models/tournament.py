@@ -18,7 +18,7 @@ class Tournament:
         end_date=None,
         number_of_rounds: int = 4,
         rounds: list[Round] = None,
-        players: list[Player] = None,
+        players_and_score: list[tuple[Player, int]] = None,
         description: str = "",
     ):
         self.name = name
@@ -27,5 +27,5 @@ class Tournament:
         self.end_date = end_date
         self.number_of_rounds = number_of_rounds
         self.rounds = rounds or []
-        self.players = players or []
+        self.players_and_score = players_and_score or []
         self.description = description
