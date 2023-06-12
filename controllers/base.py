@@ -13,6 +13,7 @@ class Controller:
 
     def load_players(self):
         """Load players from json file if available."""
+        files_handler.copy_rename_file("datas/players.json", "datas/players.json.bak")
         players_dict = files_handler.json_to_dict("datas/players.json")
         if players_dict:
             for player in players_dict:
@@ -25,11 +26,12 @@ class Controller:
         quit = False
         self.load_players()
         while not quit:
-            if self.view.menu_prompt() == "1":
+            choice = self.view.menu_prompt()
+            if choice == "1":
                 self.add_players()
-            elif self.view.menu_prompt() == "2":
+            elif choice == "2":
                 print(self.players_list)
-            elif self.view.menu_prompt() == "q":
+            elif choice == "q":
                 quit = True
             else:
                 print("Not implemented yet")
@@ -44,6 +46,7 @@ class Controller:
             player_infos = self.view.prompt_for_player_infos()
             player = Player(*player_infos)
             self.players_list.add_player(player)
-            files_handler.add_same_type_object_to_json(player, "datas/players.json")
+            files_handler.list_of_objects_to_json(
+                self.players_list.players, "datas/players.json"
+            )
             again = input("Do you want to add another player? (y/n) ")
-        # files_handler.list_of_objects_to_json(players, "datas/players.json")

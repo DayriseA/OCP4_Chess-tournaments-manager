@@ -1,7 +1,7 @@
 """This module is about handling files"""
 
 import json
-import os
+import os, shutil
 
 
 def list_of_objects_to_json(list_of_objects: list, file_path: str):
@@ -10,17 +10,10 @@ def list_of_objects_to_json(list_of_objects: list, file_path: str):
     for object in list_of_objects:
         object_dict = object.__dict__
         objects_list.append(object_dict)
-    with open(file_path, "w") as file:
-        json.dump(objects_list, file, indent=4)
-    print(f"Datas successfully saved to {file_path}")
-
-
-def add_same_type_object_to_json(object, file_path: str):
-    object_dict = object.__dict__
     if os.path.exists(file_path):
-        with open(file_path, "a") as file:
-            json.dump(object_dict, file, indent=4)
-        print(f"{object} successfully added to {file_path}")
+        with open(file_path, "w") as file:
+            json.dump(objects_list, file, indent=4)
+        print(f"{file_path} successfully saved")
     else:
         print(f"Error: {file_path} not found")
         return None
@@ -32,6 +25,15 @@ def json_to_dict(file_path: str):
         with open(file_path, "r") as file:
             datas_dict = json.load(file)
         return datas_dict
+    else:
+        print(f"Error: {file_path} not found")
+        return None
+
+
+def copy_rename_file(file_path: str, copy_file_path: str):
+    """Copy and rename a file"""
+    if os.path.exists(file_path):
+        shutil.copy(file_path, copy_file_path)
     else:
         print(f"Error: {file_path} not found")
         return None

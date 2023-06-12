@@ -54,6 +54,8 @@ class PlayerList:
         if player.is_not_registered(self.players):
             self.players.append(player)
             print(f"{player} succesfully added to the players list\n")
+        else:
+            print("This player is already registered\n")
 
     def __str__(self):
         if len(self.players) > 0:
