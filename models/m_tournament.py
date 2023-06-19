@@ -1,7 +1,7 @@
 """This module contains the Tournament class"""
 
-from models.round import Round
-from models.player import Player
+from models.m_round import Round
+from models.m_players import Player
 import datetime
 
 

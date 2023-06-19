@@ -4,13 +4,13 @@ Using MVC pattern. Datas are stored in .json files.
 """
 
 
-from controllers.base import Controller
+from controllers.c_main import MainController
 
 
 def main():
     """For now, just used for simple tests"""
-    my_controller = Controller()
-    my_controller.run()
+    chess_app = MainController()
+    chess_app.run()
 
 
 if __name__ == "__main__":

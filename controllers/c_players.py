@@ -1,14 +1,14 @@
-"""Here is my main controller."""
-from views.manager import ManagerView
-from models.player import Player, PlayerList, Match
+"""Controller for players management."""
+from models.m_players import Player, PlayerList
+from views.v_players import PlayersManagerView
 from helpers import files_handler
 
 
-class Controller:
-    """Main controller. [WIP] for now, used for simple tests."""
+class PlayersController:
+    """ "Controller class for players management."""
 
     def __init__(self):
-        self.view = ManagerView()
+        self.view = PlayersManagerView()
         self.players_list = PlayerList()
 
     def load_players(self):
@@ -20,21 +20,6 @@ class Controller:
                 player = Player(**player)
                 self.players_list.players.append(player)
             print("Players list successfully imported from datas/players.json\n")
-
-    def run(self):
-        """Run the program. Now just used for simple tests."""
-        quit = False
-        self.load_players()
-        while not quit:
-            choice = self.view.menu_prompt()
-            if choice == "1":
-                self.add_players()
-            elif choice == "2":
-                print(self.players_list)
-            elif choice == "q":
-                quit = True
-            else:
-                print("Not implemented yet")
 
     def add_players(self):
         """
@@ -51,9 +36,18 @@ class Controller:
             )
             again = input("Do you want to add another player? (y/n) ")
 
-    def end_match(self, match: Match):
-        """End a match and set the score"""
-        player1_name = match.side1[0].firstname & match.side1[0].lastname
-        player2_name = match.side2[0].firstname & match.side2[0].lastname
-        choice = self.view.end_match_prompt(player1_name, player2_name)
-        match.set_score(choice)
+    def run(self):
+        """Run the players manager."""
+        self.load_players()
+        quit = False
+        while not quit:
+            choice = self.view.menu_prompt()
+            if choice == "1":
+                self.add_players()
+            elif choice == "2":
+                print("\n")
+                print(self.players_list)
+            elif choice == "3":
+                quit = True
+            else:
+                print("Invalid choice / Not implemented yet")

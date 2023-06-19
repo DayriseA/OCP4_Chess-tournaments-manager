@@ -1,15 +1,15 @@
-"""The manager views."""
+"""A view for the players management."""
 
 
-class ManagerView:
-    """Manager view."""
+class PlayersManagerView:
+    """A view class for the players management."""
 
     def menu_prompt(self):
-        """Displays the menu prompt.[WIP]"""
-        print("Welcome, what do you want to do?")
+        """Displays the players manager's menu."""
+        print("What do you want to do?")
         print("\n1. Add a player to our local base")
         print("\n2. Display all registered players")
-        print("\n\nType 'q' to quit the program")
+        print("\n3. Back to the main menu")
         choice = input("\nPress the number of your choice: ")
         return choice
 
@@ -21,12 +21,3 @@ class ManagerView:
         birthdate = input("Birthdate (DD-MM-YYYY): ")
         chess_national_id = input("Chess national ID: ")
         return (firstname, lastname, birthdate, chess_national_id)
-
-    def end_match_prompt(self, player1_name, player2_name):
-        """Prompt for the march result."""
-        choice = input(
-            "Select if:\n1. {} won\n2. {} won\n3. Draw\n".format(
-                player1_name, player2_name
-            )
-        )
-        return choice

@@ -1,6 +1,6 @@
 """This module contains the Match class"""
 
-from models.player import Player
+from models.m_players import Player
 import random
 
 
