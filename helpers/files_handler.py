@@ -7,8 +7,8 @@ import os, shutil
 def list_of_objects_to_json(list_of_objects: list, file_path: str):
     """Write a list of objects to a json file"""
     objects_list = []
-    for object in list_of_objects:
-        object_dict = object.__dict__
+    for each_object in list_of_objects:
+        object_dict = each_object.__dict__
         objects_list.append(object_dict)
     if os.path.exists(file_path):
         with open(file_path, "w") as file:
