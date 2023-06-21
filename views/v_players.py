@@ -16,8 +16,8 @@ class PlayersManagerView:
     def prompt_for_player_infos(self):
         """Prompt for player infos."""
         print("Please enter the following informations for the player:")
-        firstname = input("Firstname: ")
-        lastname = input("Lastname: ")
+        firstname = input("Firstname: ").capitalize()
+        lastname = input("Lastname: ").upper()
         birthdate = input("Birthdate (DD-MM-YYYY): ")
-        chess_national_id = input("Chess national ID: ")
+        chess_national_id = input("Chess national ID: ").upper()
         return (firstname, lastname, birthdate, chess_national_id)

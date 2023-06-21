@@ -37,4 +37,4 @@ class PlayersController:
             elif choice == "3":
                 quit = True
             else:
-                print("Invalid choice / Not implemented yet")
+                print("Invalid choice")

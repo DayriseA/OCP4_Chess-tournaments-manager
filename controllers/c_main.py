@@ -24,7 +24,8 @@ class MainController:
                 players_manager = PlayersController()
                 players_manager.run()
             elif choice == "2":
-                pass
+                tournaments_manager = TournamentsController()
+                tournaments_manager.run()
             elif choice == "q":
                 quit = True
             else:

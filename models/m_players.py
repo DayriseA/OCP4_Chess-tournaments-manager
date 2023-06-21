@@ -59,7 +59,7 @@ class PlayersList:
             for player in players_dict:
                 player = Player(**player)
                 self.players.append(player)
-            print("Players list successfully imported from datas/players.json\n")
+            print("Players list successfully imported from datas/players.json")
 
     @staticmethod
     def backup_players() -> None:
