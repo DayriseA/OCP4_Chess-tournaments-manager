@@ -4,6 +4,7 @@ from models.m_round import Round
 from models.m_players import Player
 from helpers import files_handler
 import datetime
+import random
 
 
 class Tournament:
@@ -32,6 +33,35 @@ class Tournament:
         self.rounds = rounds or []
         self.participants = participants or []
         self.description = description
+
+    def add_participants(self, participants: list[Player]) -> None:
+        """Add a list of participants to the tournament"""
+        self.participants = participants
+
+    def shuffle_participants(self) -> None:
+        """Shuffle participants list"""
+        random.shuffle(self.participants)
+
+    def sort_participants_by_score(self) -> None:
+        """Sort participants by score in descending order."""
+        participants_scores = {}
+        for round in self.rounds:
+            for match in round.matches:
+                participant1 = match.side1[0]
+                participant2 = match.side2[0]
+                points1 = match.side1[1]
+                points2 = match.side2[1]
+                if participant1 not in participants_scores:
+                    participants_scores[participant1] = 0
+                if participant2 not in participants_scores:
+                    participants_scores[participant2] = 0
+                participants_scores[participant1] += points1
+                participants_scores[participant2] += points2
+        self.participants.sort(key=lambda x: participants_scores[x], reverse=True)
+
+    def initialize_next_round(self) -> None:
+        """"""
+        pass
 
     def __str__(self):
         return (

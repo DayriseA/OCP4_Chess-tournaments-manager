@@ -43,13 +43,15 @@ class TournamentsController:
         """Add participants to a tournament"""
         selection_method = self.view.participants_selection_method_prompt()
         if selection_method == "1":
-            tournament.participants = self.view.participants_from_list_prompt(
+            participants = self.view.participants_from_list_prompt(
                 self.players_list.players, 8
             )
+            tournament.add_participants(participants)
         elif selection_method == "2":
-            tournament.participants = self.view.participants_from_id_prompt(
+            participants = self.view.participants_from_id_prompt(
                 self.players_list.players, 8
             )
+            tournament.add_participants(participants)
 
     def update_tournament(self, tournament: Tournament):
         """Update a tournament"""
