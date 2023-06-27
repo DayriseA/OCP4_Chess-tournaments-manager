@@ -33,7 +33,7 @@ class Tournament:
         self.participants = participants or []
         self.description = description
 
-    def __repr__(self):
+    def __str__(self):
         return (
             f"\nself.name = {self.name}"
             f"\nself.location = {self.location}"
@@ -45,9 +45,6 @@ class Tournament:
             f"\nself.participants =\n {self.participants}"
             f"\nself.description =\n{self.description}"
         )
-
-    def __str__(self):
-        self.__repr__()
 
 
 class TournamentsList:

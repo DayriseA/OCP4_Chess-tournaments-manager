@@ -11,7 +11,7 @@ class TournamentsManagerView:
         print("\nWhat do you want to do?")
         print("1. Create a new tournament")
         print("2. Update a tournament")
-        print("3. Display all tournaments")
+        print("3. Start/Resume a tournament")
         print("4. Back")
         choice = input("\nPress the number of your choice: ")
         return choice
@@ -125,10 +125,6 @@ class TournamentsManagerView:
         """
         print("\n Select what to do:\n")
         choice = input(
-            "1. Register participants\n"
-            "2. Modify attributes\n"
-            "3. Initiate next round\n"
-            "4. Go to match management\n"
-            "5. Back\n"
+            "1. Register participants\n" "2. Modify attributes\n" "3. Back\n"
         )
         return choice

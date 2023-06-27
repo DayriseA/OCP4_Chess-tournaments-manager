@@ -25,11 +25,11 @@ class PlayersController:
     def run(self):
         """Run the players manager."""
         self.players_list.load_players()
+        self.players_list.backup_players()
         quit = False
         while not quit:
             choice = self.view.menu_prompt()
             if choice == "1":
-                self.players_list.backup_players()
                 self.add_players()
             elif choice == "2":
                 print("\n")
