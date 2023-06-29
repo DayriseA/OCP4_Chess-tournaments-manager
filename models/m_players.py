@@ -35,7 +35,7 @@ class Player:
         return (
             f"\nself.firstname = {self.firstname}"
             f"\nself.lastname = {self.lastname}"
-            f"\nself.birthdate = {self.birthdate}."
+            f"\nself.birthdate = {self.birthdate}"
             f"\nself.chess_national_id = {self.chess_national_id}"
         )
 
