@@ -2,6 +2,7 @@
 
 from helpers import files_handler
 from typing import List
+import json, os, shutil
 
 
 class Player:
@@ -54,17 +55,19 @@ class PlayersList:
 
     def load_players(self) -> None:
         """Load players from json file, if available."""
-        players_dict = files_handler.json_to_dict("datas/players.json")
-        if players_dict:
-            for player in players_dict:
-                player = Player(**player)
-                self.players.append(player)
-            print("Players list successfully imported from datas/players.json")
+        if os.path.exists("datas/players.json"):
+            with open("datas/players.json", "r") as file:
+                json_data = json.load(file)
+                self.players = [Player(**data) for data in json_data]
+            print("Players list successfully loaded from datas/players.json")
+        else:
+            print("datas/players.json not found")
 
     @staticmethod
     def backup_players() -> None:
         """Backup players.json file in a .bak file"""
-        files_handler.copy_rename_file("datas/players.json", "datas/players.json.bak")
+        if os.path.exists("datas/players.json"):
+            shutil.copy("datas/players.json", "datas/players.json.bak")
 
     def add_player(self, player: Player) -> None:
         """Add a new player to our players list"""
@@ -76,7 +79,12 @@ class PlayersList:
 
     def save_to_json(self) -> None:
         """Save our players list to a json file"""
-        files_handler.list_of_objects_to_json(self.players, "datas/players.json")
+        file_path = "datas/players.json"
+        if not os.path.exists(file_path):
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "w") as file:
+            json.dump([player.__dict__ for player in self.players], file, indent=4)
+        print(f"{file_path} successfully saved")
 
     def __str__(self):
         if len(self.players) > 0:

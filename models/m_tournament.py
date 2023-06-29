@@ -3,8 +3,7 @@
 from models.m_round import Round
 from models.m_players import Player
 from helpers import files_handler
-import datetime
-import random
+import datetime, random, json, os, shutil
 
 
 class Tournament:
@@ -60,8 +59,23 @@ class Tournament:
         self.participants.sort(key=lambda x: participants_scores[x], reverse=True)
 
     def initialize_next_round(self) -> None:
-        """"""
-        pass
+        """Initialize next round"""
+        if self.current_round == 0:
+            self.current_round += 1
+            self.shuffle_participants()
+            round_name = f"Round {self.current_round}"
+            round = Round(round_name)
+            print(f"{round_name} created. Setting up matches...\n")
+            round.setup_matches(self.participants)
+        elif self.current_round < self.number_of_rounds:
+            self.current_round += 1
+            self.sort_participants_by_score()
+            round_name = f"Round {self.current_round}"
+            round = Round(round_name)
+            print(f"{round_name} created. Setting up matches...\n")
+            round.setup_matches(self.participants)
+        else:
+            print("The tournament is finished")
 
     def __str__(self):
         return (
@@ -85,19 +99,19 @@ class TournamentsList:
 
     def load_from_json(self) -> None:
         """Load tournaments from json file, if available."""
-        tournaments_dict = files_handler.json_to_dict("datas/tournaments.json")
-        if tournaments_dict:
-            for tournament in tournaments_dict:
-                tournament = Tournament(**tournament)
-                self.tournaments.append(tournament)
-            print("Tournaments successfully imported from tournaments.json")
+        if os.path.exists("datas/tournaments.json"):
+            with open("datas/tournaments.json", "r") as file:
+                json_data = json.load(file)
+                self.tournaments = [Tournament(**data) for data in json_data]
+                print("Tournaments successfully imported from datas/tournaments.json")
+        else:
+            print("datas/tournaments.json not found.")
 
     @staticmethod
     def backup_tournaments() -> None:
         """Backup tournaments.json file in a .bak file"""
-        files_handler.copy_rename_file(
-            "datas/tournaments.json", "datas/tournaments.json.bak"
-        )
+        if os.path.exists("datas/tournaments.json"):
+            shutil.copy("datas/tournaments.json", "datas/tournaments.json.bak")
 
     def add_tournament(self, tournament: Tournament) -> None:
         """Add a new tournament to our tournaments list"""
@@ -109,9 +123,12 @@ class TournamentsList:
 
     def save_to_json(self) -> None:
         """Save our tournaments list to a json file"""
-        files_handler.list_of_objects_to_json(
-            self.tournaments, "datas/tournaments.json"
-        )
+        file_path = "datas/tournaments.json"
+        if not os.path.exists(file_path):
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "w") as file:
+            json.dump(self.tournaments, file, default=lambda o: o.__dict__, indent=4)
+        print("Tournaments successfully saved to datas/tournaments.json")
 
     def __str__(self):
         if len(self.tournaments) > 0:
