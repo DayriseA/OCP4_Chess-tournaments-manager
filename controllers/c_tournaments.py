@@ -3,6 +3,7 @@
 from models.m_match import Match
 from models.m_tournament import Tournament, TournamentsList
 from models.m_players import PlayersList
+from models.m_round import Round
 from views.v_tournaments import TournamentsManagerView
 
 
@@ -29,15 +30,18 @@ class TournamentsController:
         self.tournaments_list.save_to_json()
 
     def select_tournament(self) -> Tournament:
-        """
-        Select a tournament from the tournaments list by its index.
-        Returns the tournament object.
-        """
+        """Select a tournament from the tournaments list by its index."""
         selected_index = self.view.get_tournament_index_prompt(
             self.tournaments_list.tournaments
         )
         selected_tournament = self.tournaments_list.tournaments[selected_index]
         return selected_tournament
+
+    def select_match(self, round: Round) -> Match:
+        """Select a match from the current round by its index."""
+        selected_index = self.view.select_match_prompt(round.matches)
+        selected_match = round.matches[selected_index]
+        return selected_match
 
     def add_participants(self, tournament: Tournament):
         """Add participants to a tournament"""
@@ -68,6 +72,34 @@ class TournamentsController:
             else:
                 print("Invalid choice")
 
+    def activate_tournament(self, tournament: Tournament):
+        """When a tournament is started or resumed"""
+        quit = False
+        while not quit:
+            choice = self.view.tournament_active_prompt()
+            if choice == "1":  # "1. Register a match result"
+                if tournament.current_round != 0:
+                    round = tournament.rounds[tournament.current_round - 1]
+                    match = self.select_match(round)
+                    player1_name = (
+                        match.side1[0].firstname + " " + match.side1[0].lastname
+                    )
+                    player2_name = (
+                        match.side2[0].firstname + " " + match.side2[0].lastname
+                    )
+                    result = self.view.end_match_prompt(player1_name, player2_name)
+                    match.set_result(result)
+                    self.tournaments_list.save_to_json()
+                else:
+                    print("==> No round has been initialized yet")
+            elif choice == "2":
+                tournament.initialize_next_round()
+                self.tournaments_list.save_to_json()
+            elif choice == "3":
+                quit = True
+            else:
+                print("Invalid choice")
+
     def run(self):
         """Run the tournaments manager."""
         self.players_list.load_players()
@@ -81,11 +113,13 @@ class TournamentsController:
             elif choice == "2":
                 tournament_to_update = self.select_tournament()
                 self.update_tournament(tournament_to_update)
-            elif choice == "3":
+            elif choice == "3":  # choice 3 is to start/resume a tournament
                 active_tournament = self.select_tournament()
-                # later we will pass the tournament
-                pass
+                self.activate_tournament(active_tournament)
             elif choice == "4":
                 quit = True
             else:
                 print("Invalid choice")
+        # print(type(self.tournaments_list.tournaments[0]))
+        # print(type(self.tournaments_list.tournaments[0].participants))
+        # print(type(self.tournaments_list.tournaments[0].participants[0]))

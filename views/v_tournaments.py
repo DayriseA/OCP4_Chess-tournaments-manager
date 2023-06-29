@@ -1,6 +1,8 @@
 """A view for the tournaments management."""
 
 from models.m_tournament import Tournament, TournamentsList
+from models.m_round import Round
+from models.m_match import Match
 
 
 class TournamentsManagerView:
@@ -33,6 +35,7 @@ class TournamentsManagerView:
         }
 
     def participants_selection_method_prompt(self) -> str:
+        """Pick a selection method for chosing the participants."""
         choice = input(
             "\nSelect how to chose the participants:\n"
             "1. From a list of players\n"
@@ -90,18 +93,9 @@ class TournamentsManagerView:
                     print("Player {} added to the tournament.".format(player))
         return participants
 
-    def end_match_prompt(self, player1_name, player2_name):
-        """Prompt for the march result."""
-        choice = input(
-            "Select if:\n1. {} won\n2. {} won\n3. Draw\n".format(
-                player1_name, player2_name
-            )
-        )
-        return choice
-
     def get_tournament_index_prompt(self, tournaments_list: list) -> int:
-        """From a list of tournaments, chose one to update by its index."""
-        print("Please select the tournament to update:\n")
+        """From a list of tournaments, chose one by its index."""
+        print("Please select the tournament:\n")
         for index, tournament in enumerate(tournaments_list):
             print(
                 "{} - {} at {} starting {}".format(
@@ -115,16 +109,34 @@ class TournamentsManagerView:
         return choice - 1
 
     def tournament_update_prompt(self) -> str:
-        """
-        Chose what to update in the selected tournament.
-        1. Register participants
-        2. Modify attributes: not implemented yet
-        3. Initiate next round: not implemented yet
-        4. Go to match management: not implemented yet
-        5. Back
-        """
+        """Chose what to update in the selected tournament."""
         print("\n Select what to do:\n")
         choice = input(
             "1. Register participants\n" "2. Modify attributes\n" "3. Back\n"
+        )
+        return choice
+
+    def tournament_active_prompt(self) -> str:
+        """Chose what to do with the selected tournament."""
+        print("\n Select what to do:\n")
+        choice = input(
+            "1. Register a match result\n" "2. Initialize next round\n" "3. Back\n"
+        )
+        return choice
+
+    def select_match_prompt(self, matches: list[Match]) -> int:
+        """Select a match from a list by its index."""
+        print("Please select a match:\n")
+        for index, match in enumerate(matches):
+            print("{} - {}".format(index + 1, match))
+        choice = int(input("\nSelect a match (by typing index number): "))
+        return choice - 1
+
+    def end_match_prompt(self, player1_name, player2_name) -> str:
+        """Prompt for the match result."""
+        choice = input(
+            "Select if:\n1. {} won\n2. {} won\n3. Draw\n".format(
+                player1_name, player2_name
+            )
         )
         return choice

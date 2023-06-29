@@ -27,7 +27,7 @@ class Tournament:
         self.location = location
         self.start_date = start_date
         self.end_date = end_date
-        self.number_of_rounds = number_of_rounds
+        self.number_of_rounds = int(number_of_rounds)
         self.current_round = current_round
         self.rounds = rounds or []
         self.participants = participants or []
@@ -56,7 +56,13 @@ class Tournament:
                     participants_scores[participant2] = 0
                 participants_scores[participant1] += points1
                 participants_scores[participant2] += points2
-        self.participants.sort(key=lambda x: participants_scores[x], reverse=True)
+        # self.participants.sort(key=lambda x: participants_scores[x], reverse=True)
+        print("Before sorting:", self.participants)
+        self.participants.sort(
+            key=lambda x: participants_scores.get(x, 0), reverse=True
+        )
+        print("After sorting:", self.participants)
+        print("Participants scores:", participants_scores)
 
     def initialize_next_round(self) -> None:
         """Initialize next round"""
@@ -67,6 +73,7 @@ class Tournament:
             round = Round(round_name)
             print(f"=> {round_name} created. Setting up matches...")
             round.setup_matches(self.participants)
+            self.rounds.append(round)
         elif self.current_round < self.number_of_rounds:
             self.current_round += 1
             self.sort_participants_by_score()
@@ -74,6 +81,7 @@ class Tournament:
             round = Round(round_name)
             print(f"{round_name} created. Setting up matches...\n")
             round.setup_matches(self.participants)
+            self.rounds.append(round)
         else:
             print("The tournament is finished")
 
@@ -89,6 +97,18 @@ class Tournament:
             f"\nself.participants =\n {self.participants}"
             f"\nself.description =\n{self.description}"
         )
+
+
+class CustomEncoder(json.JSONEncoder):
+    """Custom encoder to handle our complex objects and datetime objects"""
+
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        elif hasattr(obj, "__dict__"):
+            return obj.__dict__
+        else:
+            return super().default(obj)
 
 
 class TournamentsList:
@@ -164,8 +184,9 @@ class TournamentsList:
         if not os.path.exists(file_path):
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w") as file:
-            json.dump(self.tournaments, file, default=lambda o: o.__dict__, indent=4)
-        print("Tournaments successfully saved to datas/tournaments.json")
+            # json.dump(self.tournaments, file, default=lambda o: o.__dict__, indent=4)
+            json.dump(self.tournaments, file, cls=CustomEncoder, indent=4)
+        print("\n(Tournaments successfully saved to datas/tournaments.json)")
 
     def __str__(self):
         if len(self.tournaments) > 0:
