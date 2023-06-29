@@ -7,10 +7,10 @@ import random
 class Match:
     """A match oppose two players and have a result when finished"""
 
-    def __init__(self, player1: Player, player2: Player):
+    def __init__(self, player1: Player, player2: Player, color: str = None):
         self.side1 = [player1, 0]
         self.side2 = [player2, 0]
-        self.player1_color = random.choice(["white", "black"])
+        self.player1_color = color or random.choice(["white", "black"])
 
     def set_result(self, result):
         """Set the result of the match"""

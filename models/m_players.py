@@ -1,6 +1,5 @@
 """This module contains the Player class"""
 
-from helpers import files_handler
 from typing import List
 import json, os, shutil
 

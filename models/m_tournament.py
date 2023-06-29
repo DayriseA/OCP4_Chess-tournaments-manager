@@ -2,7 +2,7 @@
 
 from models.m_round import Round
 from models.m_players import Player
-from helpers import files_handler
+from models.m_match import Match
 import datetime, random, json, os, shutil
 
 
@@ -65,7 +65,7 @@ class Tournament:
             self.shuffle_participants()
             round_name = f"Round {self.current_round}"
             round = Round(round_name)
-            print(f"{round_name} created. Setting up matches...\n")
+            print(f"=> {round_name} created. Setting up matches...")
             round.setup_matches(self.participants)
         elif self.current_round < self.number_of_rounds:
             self.current_round += 1
@@ -97,12 +97,49 @@ class TournamentsList:
     def __init__(self, tournaments: list[Tournament] = None):
         self.tournaments = tournaments or []
 
+    # def load_from_json(self) -> None:
+    #     """Load tournaments from json file, if available."""
+    #     if os.path.exists("datas/tournaments.json"):
+    #         with open("datas/tournaments.json", "r") as file:
+    #             json_data = json.load(file)
+    #             self.tournaments = [Tournament(**data) for data in json_data]
+    #             print("Tournaments successfully imported from datas/tournaments.json")
+    #     else:
+    #         print("datas/tournaments.json not found.")
+
     def load_from_json(self) -> None:
         """Load tournaments from json file, if available."""
         if os.path.exists("datas/tournaments.json"):
             with open("datas/tournaments.json", "r") as file:
                 json_data = json.load(file)
-                self.tournaments = [Tournament(**data) for data in json_data]
+                self.tournaments = []
+                for data in json_data:
+                    # Convert participants to list of Player objects
+                    participants = [Player(**p) for p in data["participants"]]
+                    # Convert rounds to list of Round objects
+                    rounds = []
+                    for r in data["rounds"]:
+                        # Convert matches to list of Match objects
+                        matches = []
+                        for m in r["matches"]:
+                            # Convert side1 and side2 to contain Player objects
+                            player1 = Player(**m["side1"][0])
+                            player2 = Player(**m["side2"][0])
+                            points1 = m["side1"][1]
+                            points2 = m["side2"][1]
+                            player1_color = m["player1_color"]
+                            match = Match(player1, player2, player1_color)
+                            side1 = [player1, points1]
+                            side2 = [player2, points2]
+                            match.side1 = side1
+                            match.side2 = side2
+                            matches.append(match)
+                        round = Round(r["name"], matches)
+                        rounds.append(round)
+                    tournament = Tournament(**data)
+                    tournament.participants = participants
+                    tournament.rounds = rounds
+                    self.tournaments.append(tournament)
                 print("Tournaments successfully imported from datas/tournaments.json")
         else:
             print("datas/tournaments.json not found.")
