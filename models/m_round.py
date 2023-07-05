@@ -18,8 +18,9 @@ class Round:
         self.end_date = None
         self.matches = matches or []
 
-    def setup_matches(self, participants: list[Player]) -> None:
-        """Set up the matches of the round by pairing participants."""
+    def set_1st_round_matches(self, participants_scores: list) -> None:
+        """Set up the matches of the first round, using simple pairing."""
+        participants = [participant for participant, score in participants_scores]
         if len(participants) % 2 != 0:
             for i in range(0, len(participants) - 1, 2):
                 self.matches.append(Match(participants[i], participants[i + 1]))

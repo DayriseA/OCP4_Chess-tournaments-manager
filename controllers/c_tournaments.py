@@ -93,8 +93,12 @@ class TournamentsController:
                 else:
                     print("==> No round has been initialized yet")
             elif choice == "2":
-                tournament.initialize_next_round()
-                self.tournaments_list.save_to_json()
+                if tournament.current_round == 0:
+                    tournament.initialize_first_round()
+                    self.tournaments_list.save_to_json()
+                else:
+                    tournament.initialize_next_round()
+                    self.tournaments_list.save_to_json()
             elif choice == "3":
                 quit = True
             else:
