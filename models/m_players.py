@@ -13,7 +13,7 @@ class Player:
         self,
         firstname: str,
         lastname: str,
-        birthdate,
+        birthdate: str,
         chess_national_id: str = "",
     ):
         self.firstname = firstname
@@ -31,18 +31,10 @@ class Player:
                 return False
         return True
 
-    def __repr__(self):
-        return (
-            f"\nself.firstname = {self.firstname}"
-            f"\nself.lastname = {self.lastname}"
-            f"\nself.birthdate = {self.birthdate}"
-            f"\nself.chess_national_id = {self.chess_national_id}"
-        )
-
     def __str__(self):
         return (
-            f"{self.firstname} {self.lastname} | {self.birthdate} | "
-            f"{self.chess_national_id}"
+            f"{self.firstname} {self.lastname}, né(e) le {self.birthdate}.\n"
+            f"Chess national ID: {self.chess_national_id}"
         )
 
 
@@ -76,6 +68,13 @@ class PlayersList:
         else:
             print("This player is already registered\n")
 
+    def is_registered(self, chess_national_id: str) -> bool:
+        """Check if a player is already registered"""
+        for player in self.players:
+            if player.chess_national_id == chess_national_id:
+                return True
+        return False
+
     def save_to_json(self) -> None:
         """Save our players list to a json file"""
         file_path = "datas/players.json"
@@ -84,6 +83,54 @@ class PlayersList:
         with open(file_path, "w") as file:
             json.dump([player.__dict__ for player in self.players], file, indent=4)
         print(f"{file_path} successfully saved")
+
+    def display_by_alphabetical_order(self) -> None:
+        """Display players list by alphabetical order"""
+        if len(self.players) > 0:
+            for player in sorted(self.players, key=lambda p: p.lastname):
+                print(f"\n{player}")
+            print(f"\n=> {len(self.players)} players displayed\n")
+
+    def get_player_by_id(self, chess_national_id: str) -> Player:
+        """Gets a player by its chess national ID"""
+        for player in self.players:
+            if player.chess_national_id == chess_national_id:
+                return player
+        return None
+
+    def get_player_from_list(self) -> Player:
+        """Gets a player from the players list"""
+        if len(self.players) > 0:
+            for index, player in enumerate(self.players, start=1):
+                print(f"{index} - {player.firstname} {player.lastname}")
+            choice = int(input("\nSelect a player (by typing index number): "))
+            if choice in range(1, len(self.players) + 1):
+                return self.players[choice - 1]
+            else:
+                print("Invalid choice\n")
+                return None
+        else:
+            print("No players found\n")
+            return None
+
+    def get_players_from_list(self, number_of_players: int) -> list:
+        """Gets a list of players from the players list. Needs a number of players."""
+        if len(self.players) > 0:
+            players = []
+            while len(players) < number_of_players:
+                player = self.get_player_from_list()
+                if player is None:
+                    pass
+                else:
+                    if player in players:
+                        print("This player is already selected\n")
+                    else:
+                        players.append(player)
+                        print(f"{player.firstname} {player.lastname} added to the list")
+            return players
+        else:
+            print("No players found\n")
+            return []
 
     def __str__(self):
         if len(self.players) > 0:

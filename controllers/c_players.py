@@ -11,9 +11,7 @@ class PlayersController:
         self.players_list = PlayersList()
 
     def add_players(self):
-        """
-        Ask for players infos, store them in a list and save the list in a json file.
-        """
+        """Ask for players infos, create and add them to the players list."""
         again = "y"
         while again == "y":
             player_infos = self.view.prompt_for_player_infos()
@@ -32,8 +30,7 @@ class PlayersController:
             if choice == "1":
                 self.add_players()
             elif choice == "2":
-                print("\n")
-                print(self.players_list)
+                self.players_list.display_by_alphabetical_order()
             elif choice == "3":
                 quit = True
             else:

@@ -6,10 +6,10 @@ class PlayersManagerView:
 
     def menu_prompt(self):
         """Displays the players manager's menu."""
-        print("What do you want to do?")
-        print("\n1. Add a player to our local base")
-        print("\n2. Display all registered players")
-        print("\n3. Back to the main menu")
+        print("\nWhat do you want to do?")
+        print("1. Add a player to our local base")
+        print("2. Display all registered players by alphabetical order")
+        print("3. Back to the main menu")
         choice = input("\nPress the number of your choice: ")
         return choice
 

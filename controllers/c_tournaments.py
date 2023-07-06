@@ -15,13 +15,6 @@ class TournamentsController:
         self.players_list = PlayersList()
         self.tournaments_list = TournamentsList()
 
-    # def end_match(self, match: Match):
-    #     """End a match and set the score"""
-    #     player1_name = match.side1[0].firstname & match.side1[0].lastname
-    #     player2_name = match.side2[0].firstname & match.side2[0].lastname
-    #     choice = self.view.end_match_prompt(player1_name, player2_name)
-    #     match.set_score(choice)
-
     def create_tournament(self):
         """Create a tournament"""
         tournament_infos = self.view.tournament_infos_prompt()
@@ -43,31 +36,79 @@ class TournamentsController:
         selected_match = round.matches[selected_index]
         return selected_match
 
+    def get_participants_by_id(self, number_of_participants: int) -> list:
+        """Gets a list of players by their chess national ID"""
+        participants = []
+        while len(participants) < number_of_participants:
+            chess_national_id = self.view.participant_id_prompt()
+            player = self.players_list.get_player_by_id(chess_national_id)
+            if player is None:
+                print("Unknown chess national ID, please try again\n")
+            elif player in participants:
+                print("This player is already selected\n")
+            else:
+                participants.append(player)
+                print(f"{player.firstname} {player.lastname} added to the list")
+        return participants
+
     def add_participants(self, tournament: Tournament):
         """Add participants to a tournament"""
         selection_method = self.view.participants_selection_method_prompt()
         if selection_method == "1":
-            participants = self.view.participants_from_list_prompt(
-                self.players_list.players, 8
-            )
+            participants = self.players_list.get_players_from_list(8)
             tournament.add_participants(participants)
         elif selection_method == "2":
-            participants = self.view.participants_from_id_prompt(
-                self.players_list.players, 8
-            )
+            participants = self.get_participants_by_id(8)
             tournament.add_participants(participants)
+        elif selection_method == "3":
+            pass
 
-    def update_tournament(self, tournament: Tournament):
-        """Update a tournament"""
+    def modify_tournament_attributes(self, tournament: Tournament):
+        """Modify attributes of a tournament"""
         quit = False
         while not quit:
-            choice = self.view.tournament_update_prompt()
+            choice = self.view.modify_attributes_prompt()
+            if choice == "1":
+                tournament.name = input("New name: ")
+                print(f"Name changed to {tournament.name}")
+            elif choice == "2":
+                tournament.location = input("New location: ")
+                print(f"Location changed to {tournament.location}")
+            elif choice == "3":
+                tournament.start_date = input("New start date (DD-MM-YYYY): ")
+                print(f"Starting date changed to {tournament.start_date}")
+            elif choice == "4":
+                tournament.end_date = input("New end date (DD-MM-YYYY): ")
+                print(f"End date changed to {tournament.end_date}")
+            elif choice == "5":
+                tournament.number_of_rounds = input("New number of rounds: ")
+                print(f"Number of rounds changed to {tournament.number_of_rounds}")
+            elif choice == "6":
+                tournament.description = input("New description: ")
+                print(f"Description updated")
+            elif choice == "7":
+                quit = True
+            else:
+                print("Invalid choice")
+
+    def read_or_modify_tournament(self, tournament: Tournament):
+        """Consult or modify informations of a tournament"""
+        quit = False
+        while not quit:
+            choice = self.view.read_modify_prompt()
             if choice == "1":
                 self.add_participants(tournament)
                 self.tournaments_list.save_to_json()
             elif choice == "2":
-                print(" => Not implemented yet")
+                self.modify_tournament_attributes(tournament)
+                self.tournaments_list.save_to_json()
             elif choice == "3":
+                tournament.display_details()
+            elif choice == "4":
+                tournament.participants_by_alphabetical_order()
+            elif choice == "5":
+                tournament.display_rounds_and_matches()
+            elif choice == "6":
                 quit = True
             else:
                 print("Invalid choice")
@@ -77,7 +118,7 @@ class TournamentsController:
         quit = False
         while not quit:
             choice = self.view.tournament_active_prompt()
-            if choice == "1":  # "1. Register a match result"
+            if choice == "1":
                 if tournament.current_round != 0:
                     round = tournament.rounds[tournament.current_round - 1]
                     match = self.select_match(round)
@@ -89,6 +130,8 @@ class TournamentsController:
                     )
                     result = self.view.end_match_prompt(player1_name, player2_name)
                     match.set_result(result)
+                    if round.is_round_over() == True:
+                        round.end_round()
                     self.tournaments_list.save_to_json()
                 else:
                     print("==> No round has been initialized yet")
@@ -115,15 +158,12 @@ class TournamentsController:
             if choice == "1":
                 self.create_tournament()
             elif choice == "2":
-                tournament_to_update = self.select_tournament()
-                self.update_tournament(tournament_to_update)
-            elif choice == "3":  # choice 3 is to start/resume a tournament
+                selected_tournament = self.select_tournament()
+                self.read_or_modify_tournament(selected_tournament)
+            elif choice == "3":
                 active_tournament = self.select_tournament()
                 self.activate_tournament(active_tournament)
             elif choice == "4":
                 quit = True
             else:
                 print("Invalid choice")
-        # print(type(self.tournaments_list.tournaments[0]))
-        # print(type(self.tournaments_list.tournaments[0].participants))
-        # print(type(self.tournaments_list.tournaments[0].participants[0]))

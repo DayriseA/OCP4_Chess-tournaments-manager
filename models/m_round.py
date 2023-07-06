@@ -38,3 +38,32 @@ class Round:
             player2_name = match.side2[0].firstname + " " + match.side2[0].lastname
             color = match.player1_color
             print(f"{player1_name} (in {color} ) VS {player2_name}")
+
+    def is_round_over(self) -> bool:
+        """Check if the round is over."""
+        round_over = True
+        for match in self.matches:
+            if match.side1[1] == 0 and match.side2[1] == 0:
+                round_over = False
+                break
+        return round_over
+
+    def end_round(self) -> None:
+        """Set the end date"""
+        self.end_date = datetime.datetime.now()
+        print(f"{self.name} now ended please initialize the next round.\n")
+
+    def display_matches(self) -> None:
+        """Display the matches of the round."""
+        print(f"\n{self.name} matches:")
+        for match in self.matches:
+            print(match)
+
+    def __str__(self) -> str:
+        if self.end_date is None:
+            return f"{self.name} started on {self.start_date}, still ongoing."
+        else:
+            return (
+                f"{self.name} started on {self.start_date} "
+                f"and ended on {self.end_date}."
+            )

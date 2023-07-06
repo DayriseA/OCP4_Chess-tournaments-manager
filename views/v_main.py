@@ -6,9 +6,9 @@ class MainMenuView:
 
     def menu_prompt(self):
         """Displays the main menu prompt."""
-        print("What do you want to do?")
-        print("\n1. Manage players")
-        print("\n2. Manage tournaments")
-        print("\n\nType 'q' to quit the program")
+        print("\nWhat do you want to do?")
+        print("1. Manage players")
+        print("2. Manage tournaments")
+        print("Type 'q' to quit the program")
         choice = input("\nPress the number of your choice: ")
         return choice

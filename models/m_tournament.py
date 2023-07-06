@@ -7,9 +7,7 @@ import datetime, random, json, os, shutil
 
 
 class Tournament:
-    """
-    A Tournament and its attributes
-    """
+    """A Tournament class"""
 
     def __init__(
         self,
@@ -69,6 +67,17 @@ class Tournament:
                 j += 1
             random.shuffle(self.participants_scores[i:j])
             i = j
+
+    def participants_by_alphabetical_order(self) -> None:
+        """Sort and displays the participants by alphabetical order"""
+        if len(self.participants_scores) > 0:
+            participants = [player for player, score in self.participants_scores]
+            participants.sort(key=lambda p: p.lastname)
+            for participant in participants:
+                print(f"\n{participant}")
+            print(f"\n=> {len(participants)} participants displayed\n")
+        else:
+            print("No participants registered yet")
 
     def already_played(self, player1_id, player2_id) -> bool:
         """Check if two players already played against each other"""
@@ -173,18 +182,37 @@ class Tournament:
         else:
             print("The tournament is finished")
 
-    def __str__(self):
-        return (
-            f"\nself.name = {self.name}"
-            f"\nself.location = {self.location}"
-            f"\nself.start_date = {self.start_date}"
-            f"\nself.end_date = {self.end_date}"
-            f"\nself.number_of_rounds = {self.number_of_rounds}"
-            f"\nself.current_round = {self.current_round}"
-            f"\nself.rounds =\n {self.rounds}"
-            f"\nself.participants_scores =\n {self.participants_scores}"
-            f"\nself.description =\n{self.description}"
+    def display_details(self) -> None:
+        """Display tournament detailed informations"""
+        print(
+            f"\nTournament name: {self.name}\n"
+            f"Location: {self.location}\n"
+            f"Start date: {self.start_date}"
         )
+        if self.end_date:
+            print(f"End date: {self.end_date}")
+        if self.current_round > 0:
+            print(
+                f"Current round: {self.current_round} / "
+                f"{self.number_of_rounds} planned"
+            )
+        else:
+            print(
+                f"Number of rounds planned: {self.number_of_rounds} | "
+                f"None initialized yet"
+            )
+        print(f"Description:\n{self.description}")
+
+    def display_rounds_and_matches(self) -> None:
+        """Display all rounds and matches"""
+        if len(self.rounds) > 0:
+            for round in self.rounds:
+                round.display_matches()
+        else:
+            print("No rounds initialized yet")
+
+    def __str__(self) -> str:
+        return f"{self.name}, starting on {self.start_date}, " f"in {self.location}"
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -293,7 +321,7 @@ class TournamentsList:
     def __str__(self):
         if len(self.tournaments) > 0:
             for tournament in self.tournaments:
-                tournament.__str__()
+                print(tournament)
             return f"\n=> {len(self.tournaments)} tournaments displayed\n"
         else:
             return "No tournaments found\n"
