@@ -59,6 +59,16 @@ class Tournament:
     def sort_participants_by_score(self) -> None:
         """Sort participants by score in descending order."""
         self.participants_scores.sort(key=lambda x: x[1], reverse=True)
+        i = 0
+        while i < len(self.participants_scores):
+            j = i + 1
+            while (
+                j < len(self.participants_scores)
+                and self.participants_scores[j][1] == self.participants_scores[i][1]
+            ):
+                j += 1
+            random.shuffle(self.participants_scores[i:j])
+            i = j
 
     def already_played(self, player1_id, player2_id) -> bool:
         """Check if two players already played against each other"""
@@ -80,27 +90,46 @@ class Tournament:
         if len(self.participants_scores) % 2 == 0:
             while availables_players:
                 player1 = availables_players[0]
-                availables_players.remove(player1)
-                for player2 in availables_players:
+                for player2 in availables_players[1:]:
                     if not self.already_played(
                         player1.chess_national_id, player2.chess_national_id
                     ):
                         match = Match(player1, player2)
                         next_round.matches.append(match)
+                        availables_players.remove(player1)
                         availables_players.remove(player2)
                         break
+                    else:
+                        if len(availables_players) == 2:
+                            player1 = availables_players[0]
+                            player2 = availables_players[1]
+                            match = Match(player1, player2)
+                            next_round.matches.append(match)
+                            availables_players.remove(player1)
+                            availables_players.remove(player2)
+                            break
+
         else:
             while len(availables_players) > 1:
                 player1 = availables_players[0]
-                availables_players.remove(player1)
-                for player2 in availables_players:
+                for player2 in availables_players[1:]:
                     if not self.already_played(
                         player1.chess_national_id, player2.chess_national_id
                     ):
                         match = Match(player1, player2)
                         next_round.matches.append(match)
+                        availables_players.remove(player1)
                         availables_players.remove(player2)
                         break
+                    else:
+                        if len(availables_players) == 3:
+                            player1 = availables_players[0]
+                            player2 = availables_players[1]
+                            match = Match(player1, player2)
+                            next_round.matches.append(match)
+                            availables_players.remove(player1)
+                            availables_players.remove(player2)
+                            break
             player_alone = availables_players.pop()
             availables_players = [player for player, score in self.participants_scores]
             for opponent in reversed(availables_players):
