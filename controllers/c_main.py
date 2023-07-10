@@ -6,20 +6,17 @@ from views.v_main import MainMenuView
 
 
 class MainController:
-    """
-    Class for the main controller.
-    [WIP] For now used for simple tests.
-    """
+    """Class for the main controller."""
 
     def __init__(self):
         self.menu_view = MainMenuView()
 
     def run(self):
-        """[WIP] Now just used for simple tests."""
-        quit = False
+        """Running the main controller"""
+        quit_menu = False
         print("Welcome to Chess Tournament Manager!")
-        while not quit:
-            choice = self.menu_view.menu_prompt()
+        while not quit_menu:
+            choice = self.menu_view.main_menu()
             if choice == "1":
                 players_manager = PlayersController()
                 players_manager.run()
@@ -27,6 +24,6 @@ class MainController:
                 tournaments_manager = TournamentsController()
                 tournaments_manager.run()
             elif choice == "q":
-                quit = True
+                quit_menu = True
             else:
-                print("Invalid choice / Not implemented yet")
+                print("Invalid choice")

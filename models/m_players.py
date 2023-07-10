@@ -1,13 +1,13 @@
-"""This module contains the Player class"""
+"""This module contains the Player and Players classes"""
 
+import json
+import os
+import shutil
 from typing import List
-import json, os, shutil
 
 
 class Player:
-    """
-    A player has at least a firstname, a lastname and a birthdate
-    """
+    """A player has at least a firstname, a lastname and a birthdate."""
 
     def __init__(
         self,
@@ -20,16 +20,6 @@ class Player:
         self.lastname = lastname
         self.birthdate = birthdate
         self.chess_national_id = chess_national_id
-
-    def is_not_registered(self, players_list):
-        """
-        Check if a player is not already registered in our players list.
-        Uses the chess national ID as primary key.
-        """
-        for player in players_list:
-            if player.chess_national_id == self.chess_national_id:
-                return False
-        return True
 
     def __str__(self):
         return (
@@ -60,20 +50,20 @@ class PlayersList:
         if os.path.exists("datas/players.json"):
             shutil.copy("datas/players.json", "datas/players.json.bak")
 
+    def is_not_registered(self, chess_national_id: str) -> bool:
+        """Check if a player is already registered"""
+        for player in self.players:
+            if player.chess_national_id == chess_national_id:
+                return False
+        return True
+
     def add_player(self, player: Player) -> None:
         """Add a new player to our players list"""
-        if player.is_not_registered(self.players):
+        if self.is_not_registered(player.chess_national_id):
             self.players.append(player)
             print(f"{player} successfully added to the players list\n")
         else:
             print("This player is already registered\n")
-
-    def is_registered(self, chess_national_id: str) -> bool:
-        """Check if a player is already registered"""
-        for player in self.players:
-            if player.chess_national_id == chess_national_id:
-                return True
-        return False
 
     def save_to_json(self) -> None:
         """Save our players list to a json file"""

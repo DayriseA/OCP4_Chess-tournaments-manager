@@ -1,10 +1,10 @@
-"""A view for the players management."""
+"""A view for the player's management."""
 
 
 class PlayersManagerView:
-    """A view class for the players management."""
+    """A view class for the player's management."""
 
-    def menu_prompt(self):
+    def players_menu(self):
         """Displays the players manager's menu."""
         print("\nWhat do you want to do?")
         print("1. Add a player to our local base")
@@ -13,11 +13,11 @@ class PlayersManagerView:
         choice = input("\nPress the number of your choice: ")
         return choice
 
-    def prompt_for_player_infos(self):
-        """Prompt for player infos."""
-        print("Please enter the following informations for the player:")
+    def ask_player_info(self):
+        """Prompt for player information."""
+        print("Please enter the following information for the player:")
         firstname = input("Firstname: ").capitalize()
         lastname = input("Lastname: ").upper()
         birthdate = input("Birthdate (DD-MM-YYYY): ")
         chess_national_id = input("Chess national ID: ").upper()
-        return (firstname, lastname, birthdate, chess_national_id)
+        return firstname, lastname, birthdate, chess_national_id

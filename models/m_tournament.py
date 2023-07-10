@@ -1,13 +1,21 @@
-"""This module contains the Tournament class"""
+"""
+This module contains the Tournament class, a custom json encoder
+and the TournamentsList class.
+"""
 
-from models.m_round import Round
-from models.m_players import Player
+import datetime
+import json
+import os
+import random
+import shutil
+
 from models.m_match import Match
-import datetime, random, json, os, shutil
+from models.m_players import Player
+from models.m_round import Round
 
 
 class Tournament:
-    """A Tournament class"""
+    """The Tournament class"""
 
     def __init__(
         self,
@@ -40,8 +48,8 @@ class Tournament:
         for i in range(len(self.participants_scores)):
             participant, score = self.participants_scores[i]
             score = 0
-            for round in self.rounds:
-                for match in round.matches:
+            for round_ in self.rounds:
+                for match in round_.matches:
                     if (
                         match.side1[0].chess_national_id
                         == participant.chess_national_id
@@ -55,7 +63,10 @@ class Tournament:
             self.participants_scores[i] = (participant, score)
 
     def sort_participants_by_score(self) -> None:
-        """Sort participants by score in descending order."""
+        """
+        Sort participants by score in descending order.
+        Participants having the same score are shuffled between them.
+        """
         self.participants_scores.sort(key=lambda x: x[1], reverse=True)
         i = 0
         while i < len(self.participants_scores):
@@ -81,8 +92,8 @@ class Tournament:
 
     def already_played(self, player1_id, player2_id) -> bool:
         """Check if two players already played against each other"""
-        for round in self.rounds:
-            for match in round.matches:
+        for round_ in self.rounds:
+            for match in round_.matches:
                 if (
                     match.side1[0].chess_national_id == player1_id
                     and match.side2[0].chess_national_id == player2_id
@@ -94,66 +105,68 @@ class Tournament:
         return False
 
     def setup_matches(self, next_round) -> None:
-        """Set up matches of the next round received as argument. Avoid rematches."""
-        availables_players = [player for player, score in self.participants_scores]
+        """
+        Set up matches of the next round received as argument. Avoid rematches.
+        If there is an odd number of participant, one will have to play 2 times.
+        """
+        available_players = [player for player, score in self.participants_scores]
         if len(self.participants_scores) % 2 == 0:
-            while availables_players:
-                player1 = availables_players[0]
-                for player2 in availables_players[1:]:
+            while available_players:
+                player1 = available_players[0]
+                for player2 in available_players[1:]:
                     if not self.already_played(
                         player1.chess_national_id, player2.chess_national_id
                     ):
                         match = Match(player1, player2)
                         next_round.matches.append(match)
-                        availables_players.remove(player1)
-                        availables_players.remove(player2)
+                        available_players.remove(player1)
+                        available_players.remove(player2)
                         break
                     else:
-                        if len(availables_players) == 2:
-                            player1 = availables_players[0]
-                            player2 = availables_players[1]
+                        if len(available_players) == 2:
+                            player1 = available_players[0]
+                            player2 = available_players[1]
                             match = Match(player1, player2)
                             next_round.matches.append(match)
-                            availables_players.remove(player1)
-                            availables_players.remove(player2)
+                            available_players.remove(player1)
+                            available_players.remove(player2)
                             break
-
         else:
-            while len(availables_players) > 1:
-                player1 = availables_players[0]
-                for player2 in availables_players[1:]:
+            while len(available_players) > 1:
+                player1 = available_players[0]
+                for player2 in available_players[1:]:
                     if not self.already_played(
                         player1.chess_national_id, player2.chess_national_id
                     ):
                         match = Match(player1, player2)
                         next_round.matches.append(match)
-                        availables_players.remove(player1)
-                        availables_players.remove(player2)
+                        available_players.remove(player1)
+                        available_players.remove(player2)
                         break
                     else:
-                        if len(availables_players) == 3:
-                            player1 = availables_players[0]
-                            player2 = availables_players[1]
+                        if len(available_players) == 3:
+                            player1 = available_players[0]
+                            player2 = available_players[1]
                             match = Match(player1, player2)
                             next_round.matches.append(match)
-                            availables_players.remove(player1)
-                            availables_players.remove(player2)
+                            available_players.remove(player1)
+                            available_players.remove(player2)
                             break
-            player_alone = availables_players.pop()
-            availables_players = [player for player, score in self.participants_scores]
-            for opponent in reversed(availables_players):
+            player_alone = available_players.pop()
+            available_players = [player for player, score in self.participants_scores]
+            # Avoid pairing with himself
+            for player in available_players:
+                if player_alone.chess_national_id == player.chess_national_id:
+                    available_players.remove(player)
+                    break
+            for opponent in reversed(available_players):
                 if not self.already_played(
                     player_alone.chess_national_id, opponent.chess_national_id
                 ):
                     match = Match(player_alone, opponent)
                     next_round.matches.append(match)
                     break
-        print(f"{next_round.name} matches set up as follow:\n")
-        for match in next_round.matches:
-            player1_name = match.side1[0].firstname + " " + match.side1[0].lastname
-            player2_name = match.side2[0].firstname + " " + match.side2[0].lastname
-            color = match.player1_color
-            print(f"{player1_name} (in {color} ) VS {player2_name}")
+        next_round.display_matches()
 
     def initialize_first_round(self) -> None:
         """Initialize first round"""
@@ -170,10 +183,10 @@ class Tournament:
 
     def initialize_next_round(self) -> None:
         """Initialize next round"""
+        self.update_scores()
+        self.sort_participants_by_score()
         if self.current_round < self.number_of_rounds:
             self.current_round += 1
-            self.update_scores()
-            self.sort_participants_by_score()
             round_name = f"Round {self.current_round}"
             next_round = Round(round_name)
             print(f"{round_name} created. Setting up matches...\n")
@@ -183,7 +196,7 @@ class Tournament:
             print("The tournament is finished")
 
     def display_details(self) -> None:
-        """Display tournament detailed informations"""
+        """Display tournament detailed information"""
         print(
             f"\nTournament name: {self.name}\n"
             f"Location: {self.location}\n"
@@ -206,8 +219,8 @@ class Tournament:
     def display_rounds_and_matches(self) -> None:
         """Display all rounds and matches"""
         if len(self.rounds) > 0:
-            for round in self.rounds:
-                round.display_matches()
+            for round_ in self.rounds:
+                round_.display_matches()
         else:
             print("No rounds initialized yet")
 
@@ -234,7 +247,7 @@ class TournamentsList:
         self.tournaments = tournaments or []
 
     def load_from_json(self) -> None:
-        """Load tournaments from json file, if available."""
+        """Custom method for loading tournaments from json file (if available)."""
         if os.path.exists("datas/tournaments.json"):
             with open("datas/tournaments.json", "r") as file:
                 tournaments_data = json.load(file)
@@ -262,12 +275,12 @@ class TournamentsList:
                         )
                         tournament.participants_scores.append(participant_score)
                     for round_data in tournament_data["rounds"]:
-                        round = Round(round_data["name"])
-                        round.start_date = datetime.datetime.fromisoformat(
+                        round_ = Round(round_data["name"])
+                        round_.start_date = datetime.datetime.fromisoformat(
                             round_data["start_date"]
                         )
                         if round_data["end_date"]:
-                            round.end_date = (
+                            round_.end_date = (
                                 datetime.datetime.fromisoformat(round_data["end_date"])
                                 or None
                             )
@@ -287,8 +300,8 @@ class TournamentsList:
                             match = Match(player1, player2, match_data["player1_color"])
                             match.side1[1] = match_data["side1"][1]
                             match.side2[1] = match_data["side2"][1]
-                            round.matches.append(match)
-                        tournament.rounds.append(round)
+                            round_.matches.append(match)
+                        tournament.rounds.append(round_)
                     self.tournaments.append(tournament)
             print("Tournaments successfully imported from datas/tournaments.json")
         else:
@@ -314,7 +327,6 @@ class TournamentsList:
         if not os.path.exists(file_path):
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w") as file:
-            # json.dump(self.tournaments, file, default=lambda o: o.__dict__, indent=4)
             json.dump(self.tournaments, file, cls=CustomEncoder, indent=4)
         print("\n(Tournaments successfully saved to datas/tournaments.json)")
 

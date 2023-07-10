@@ -8,7 +8,7 @@ from controllers.c_main import MainController
 
 
 def main():
-    """For now, just used for simple tests"""
+    """Run the app."""
     chess_app = MainController()
     chess_app.run()
 

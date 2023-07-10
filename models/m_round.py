@@ -2,7 +2,6 @@
 import datetime
 import random
 from models.m_match import Match
-from models.m_players import Player
 
 
 class Round:
@@ -51,7 +50,7 @@ class Round:
     def end_round(self) -> None:
         """Set the end date"""
         self.end_date = datetime.datetime.now()
-        print(f"{self.name} now ended please initialize the next round.\n")
+        print(f"{self.name} now ended.\n")
 
     def display_matches(self) -> None:
         """Display the matches of the round."""

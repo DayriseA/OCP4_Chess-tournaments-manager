@@ -4,7 +4,7 @@
 class MainMenuView:
     """A view class displaying the main menu."""
 
-    def menu_prompt(self):
+    def main_menu(self):
         """Displays the main menu prompt."""
         print("\nWhat do you want to do?")
         print("1. Manage players")
