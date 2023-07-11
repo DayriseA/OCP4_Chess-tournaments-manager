@@ -1,3 +1,4 @@
 env/
 datas/
+flake8_rapport/
 __pycache__/

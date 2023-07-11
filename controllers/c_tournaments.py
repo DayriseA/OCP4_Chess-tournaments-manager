@@ -85,7 +85,7 @@ class TournamentsController:
                 print(f"Number of rounds changed to {tournament.number_of_rounds}")
             elif choice == "6":
                 tournament.description = input("New description: ")
-                print(f"Description updated")
+                print("Description updated")
             elif choice == "7":
                 quit_ = True
             else:
