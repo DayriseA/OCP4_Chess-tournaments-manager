@@ -34,21 +34,21 @@ class PlayersList:
     def __init__(self, players: List[Player] = None) -> None:
         self.players = players or []
 
-    def load_players(self) -> None:
-        """Load players from json file, if available."""
-        if os.path.exists("datas/players.json"):
-            with open("datas/players.json", "r") as file:
+    def load_players(self, path: str) -> bool:
+        """Load players from json file at a given path, if available."""
+        if os.path.exists(path):
+            with open(path, "r") as file:
                 json_data = json.load(file)
                 self.players = [Player(**data) for data in json_data]
-            print("Players list successfully loaded from datas/players.json")
+            return True
         else:
-            print("datas/players.json not found")
+            return False
 
     @staticmethod
-    def backup_players() -> None:
-        """Backup players.json file in a .bak file"""
-        if os.path.exists("datas/players.json"):
-            shutil.copy("datas/players.json", "datas/players.json.bak")
+    def backup_players(path: str) -> None:
+        """Backup players json file in a .bak file"""
+        if os.path.exists(path):
+            shutil.copy(path, path + ".bak")
 
     def is_not_registered(self, chess_national_id: str) -> bool:
         """Check if a player is already registered"""
@@ -57,29 +57,30 @@ class PlayersList:
                 return False
         return True
 
-    def add_player(self, player: Player) -> None:
+    def add_player(self, player: Player) -> str:
         """Add a new player to our players list"""
         if self.is_not_registered(player.chess_national_id):
             self.players.append(player)
-            print(f"{player} successfully added to the players list\n")
+            msg = f"=> {player.firstname} {player.lastname} successfully added to " \
+                  f"the players list\n"
+            return msg
         else:
-            print("This player is already registered\n")
+            msg = "This player is already registered\n"
+            return msg
 
-    def save_to_json(self) -> None:
+    def save_to_json(self, file_path: str) -> str:
         """Save our players list to a json file"""
-        file_path = "datas/players.json"
         if not os.path.exists(file_path):
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w") as file:
             json.dump([player.__dict__ for player in self.players], file, indent=4)
-        print(f"{file_path} successfully saved")
+        return f"{file_path} successfully saved"
 
-    def display_by_alphabetical_order(self) -> None:
-        """Display players list by alphabetical order"""
+    def by_alphabetical_order(self) -> list:
+        """Return a players list sorted by alphabetical order"""
         if len(self.players) > 0:
-            for player in sorted(self.players, key=lambda p: p.lastname):
-                print(f"\n{player}")
-            print(f"\n=> {len(self.players)} players displayed\n")
+            players_sorted_az = sorted(self.players, key=lambda p: p.lastname)
+            return players_sorted_az
 
     def get_player_by_id(self, chess_national_id: str) -> Player:
         """Gets a player by its chess national ID"""
@@ -88,39 +89,25 @@ class PlayersList:
                 return player
         return None
 
-    def get_player_from_list(self) -> Player:
-        """Gets a player from the players list"""
+    def enumerate_players(self) -> str:
+        """Returns the players list and indexes (starting at 1) as a string"""
+        players_list = ""
         if len(self.players) > 0:
             for index, player in enumerate(self.players, start=1):
-                print(f"{index} - {player.firstname} {player.lastname}")
-            choice = int(input("\nSelect a player (by typing index number): "))
-            if choice in range(1, len(self.players) + 1):
-                return self.players[choice - 1]
+                players_list += f"{index} - {player.firstname} {player.lastname}\n"
+            return players_list
+        else:
+            return "No players found\n"
+
+    def get_player_from_index(self, index: int) -> Player:
+        """Gets a player from the players list by its index"""
+        if len(self.players) > 0:
+            if index in range(1, len(self.players) + 1):
+                return self.players[index - 1]
             else:
-                print("Invalid choice\n")
                 return None
         else:
-            print("No players found\n")
             return None
-
-    def get_players_from_list(self, number_of_players: int) -> list:
-        """Gets a list of players from the players list. Needs a number of players."""
-        if len(self.players) > 0:
-            players = []
-            while len(players) < number_of_players:
-                player = self.get_player_from_list()
-                if player is None:
-                    pass
-                else:
-                    if player in players:
-                        print("This player is already selected\n")
-                    else:
-                        players.append(player)
-                        print(f"{player.firstname} {player.lastname} added to the list")
-            return players
-        else:
-            print("No players found\n")
-            return []
 
     def __str__(self):
         if len(self.players) > 0:

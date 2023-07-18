@@ -103,3 +103,12 @@ class TournamentsManagerView:
             )
         )
         return choice
+
+    def show_message(self, message: str):
+        """Generic print of a string"""
+        print(message)
+
+    def simple_prompt(self, prompt: str) -> str:
+        """Get a simple input using the prompt argument"""
+        choice = input(prompt)
+        return choice

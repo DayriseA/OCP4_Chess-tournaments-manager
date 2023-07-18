@@ -12,8 +12,8 @@ class Match:
         self.side2 = [player2, 0]
         self.player1_color = color or random.choice(["white", "black"])
 
-    def set_result(self, result):
-        """Set the result of the match"""
+    def set_result(self, result) -> str:
+        """Set the result of the match. Return itself as a str"""
         if result == "1":
             self.side1[1] = 1
             self.side2[1] = 0
@@ -24,8 +24,10 @@ class Match:
             self.side1[1] = 0.5
             self.side2[1] = 0.5
         else:
-            print("Invalid input")
-        print(self)
+            msg = "Invalid input"
+            return msg
+        msg = f"{self}"
+        return msg
 
     def __str__(self):
         """Return names of the players and if they won, lost or draw"""

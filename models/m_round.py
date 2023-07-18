@@ -17,7 +17,7 @@ class Round:
         self.end_date = None
         self.matches = matches or []
 
-    def set_1st_round_matches(self, participants_scores: list) -> None:
+    def set_1st_round_matches(self, participants_scores: list) -> str:
         """Set up the matches of the first round, using simple pairing."""
         participants = [participant for participant, score in participants_scores]
         if len(participants) % 2 != 0:
@@ -31,12 +31,13 @@ class Round:
             for i in range(0, len(participants), 2):
                 self.matches.append(Match(participants[i], participants[i + 1]))
 
-        print(f"{self.name} matches set up as follow:\n")
+        msg = f"{self.name} matches set up as follow:\n"
         for match in self.matches:
             player1_name = match.side1[0].firstname + " " + match.side1[0].lastname
             player2_name = match.side2[0].firstname + " " + match.side2[0].lastname
             color = match.player1_color
-            print(f"{player1_name} (in {color} ) VS {player2_name}")
+            msg += f"{player1_name} (in {color} ) VS {player2_name}\n"
+        return msg
 
     def is_round_over(self) -> bool:
         """Check if the round is over."""
@@ -47,16 +48,18 @@ class Round:
                 break
         return round_over
 
-    def end_round(self) -> None:
+    def end_round(self) -> str:
         """Set the end date"""
         self.end_date = datetime.datetime.now()
-        print(f"{self.name} now ended.\n")
+        msg = f"{self.name} now ended.\n"
+        return msg
 
-    def display_matches(self) -> None:
-        """Display the matches of the round."""
-        print(f"\n{self.name} matches:")
+    def display_matches(self) -> str:
+        """Return the matches of the round as a str."""
+        to_display = f"\n{self.name} matches:"
         for match in self.matches:
-            print(match)
+            to_display += f"\n{match}."
+        return to_display
 
     def __str__(self) -> str:
         if self.end_date is None:
